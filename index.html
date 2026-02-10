@@ -75,16 +75,16 @@ const btn = document.getElementById("download");
 let b = {
   x: parseFloat(localStorage.getItem("btnX")) || 100,
   y: parseFloat(localStorage.getItem("btnY")) || 100,
-  vx: parseFloat(localStorage.getItem("btnVX")) || 0.65,
-  vy: parseFloat(localStorage.getItem("btnVY")) || 0.45
+  vx: parseFloat(localStorage.getItem("btnVX")) || 0.45,
+  vy: parseFloat(localStorage.getItem("btnVY")) || 0.35
 };
 
 function moveButton() {
   const w = window.innerWidth;
   const h = window.innerHeight;
 
-  b.vx += 0.55*(Math.random()-0.5);
-  b.vy += 0.45*(Math.random()-0.5);
+  b.vx += 0.5*(Math.random()-0.5);
+  b.vy += 0.4*(Math.random()-0.5);
 
   b.x += b.vx;
   b.y += b.vy;
