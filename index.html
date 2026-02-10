@@ -35,7 +35,7 @@ html, body {
   margin-top: -200px;
 }
 
-#download1, #download2 {
+#download {
   position: absolute;
   padding: 16px 32px;
   font-size: 20px;
@@ -53,13 +53,11 @@ html, body {
 <div id="bg"></div>
 <div id="bg2"></div>
 
-<a href="Wirusik.exe" download="kodzik1">
-  <button id="download1">POBIERZ 1</button>
+<a href="Wirusik.exe" download="kodzik">
+  <button id="download">POBIERZ</button>
 </a>
 
-<a href="Wirusik.exe" download="kodzik2">
-  <button id="download2">POBIERZ 2</button>
-</a>
+<audio id="rickroll" src="https://www.myinstants.com/media/sounds/rickroll.mp3" preload="auto"></audio>
 
 <script>
 /* ===== NIERÓWNY OBRÓT OBRAZU 1 ===== */
@@ -100,78 +98,63 @@ function rotateBg2() {
 }
 rotateBg2();
 
-/* ===== ODBIJAJĄCE SIĘ PRZYCISKI Z LOSOWĄ ZMIANĄ PRĘDKOŚCI ===== */
-const btn1 = document.getElementById("download1");
-const btn2 = document.getElementById("download2");
+/* ===== ODBIJAJĄCY SIĘ PRZYCISK ===== */
+const btn = document.getElementById("download");
 
-let b1 = {
-  x: parseFloat(localStorage.getItem("btn1X")) || 100,
-  y: parseFloat(localStorage.getItem("btn1Y")) || 100,
-  vx: parseFloat(localStorage.getItem("btn1VX")) || 0.65,
-  vy: parseFloat(localStorage.getItem("btn1VY")) || 0.45
+let b = {
+  x: parseFloat(localStorage.getItem("btnX")) || 100,
+  y: parseFloat(localStorage.getItem("btnY")) || 100,
+  vx: parseFloat(localStorage.getItem("btnVX")) || 0.65,
+  vy: parseFloat(localStorage.getItem("btnVY")) || 0.45
 };
 
-let b2 = {
-  x: parseFloat(localStorage.getItem("btn2X")) || 300,
-  y: parseFloat(localStorage.getItem("btn2Y")) || 200,
-  vx: parseFloat(localStorage.getItem("btn2VX")) || 0.55,
-  vy: parseFloat(localStorage.getItem("btn2VY")) || 0.35
-};
-
-function moveButtons() {
+function moveButton() {
   const w = window.innerWidth;
   const h = window.innerHeight;
 
-  // losowa zmiana prędkości tak jak w Twoim kodzie
- 
-  b1.vx += 0.5*(Math.random() - 0.5);
-  b1.vy += 0.4*(Math.random() - 0.5);
-  
-  b2.vx += 0.5*(Math.random() - 0.5);
-  b2.vy += 0.4*(Math.random() - 0.5);
+  // losowa zmiana prędkości jak wcześniej
+  b.vx += 0.55*(Math.random() - 0.5);
+  b.vy += 0.45*(Math.random() - 0.5);
 
   // aktualizacja pozycji
-  b1.x += b1.vx;
-  b1.y += b1.vy;
-  b2.x += b2.vx;
-  b2.y += b2.vy;
+  b.x += b.vx;
+  b.y += b.vy;
 
   // odbicie od ścian
-  if (b1.x <= 0 || b1.x + btn1.offsetWidth >= w) b1.vx *= -1;
-  if (b1.y <= 0 || b1.y + btn1.offsetHeight >= h) b1.vy *= -1;
-  if (b2.x <= 0 || b2.x + btn2.offsetWidth >= w) b2.vx *= -1;
-  if (b2.y <= 0 || b2.y + btn2.offsetHeight >= h) b2.vy *= -1;
-
-  // odbicie od siebie
-  const dx = (b1.x + btn1.offsetWidth/2) - (b2.x + btn2.offsetWidth/2);
-  const dy = (b1.y + btn1.offsetHeight/2) - (b2.y + btn2.offsetHeight/2);
-  const dist = Math.sqrt(dx*dx + dy*dy);
-  if (dist < (btn1.offsetWidth + btn2.offsetWidth)/2) {
-    b1.vx *= -0.8; b1.vy *= -0.8;
-    b2.vx *= -0.8; b2.vy *= -0.8;
-  }
+  if (b.x <= 0 || b.x + btn.offsetWidth >= w) b.vx *= -0.98;
+  if (b.y <= 0 || b.y + btn.offsetHeight >= h) b.vy *= -0.98;
 
   // ustawienie pozycji
-  btn1.style.left = b1.x + "px";
-  btn1.style.top = b1.y + "px";
-  btn2.style.left = b2.x + "px";
-  btn2.style.top = b2.y + "px";
+  btn.style.left = b.x + "px";
+  btn.style.top = b.y + "px";
 
   // zapis w localStorage
-  localStorage.setItem("btn1X", b1.x);
-  localStorage.setItem("btn1Y", b1.y);
-  localStorage.setItem("btn1VX", b1.vx);
-  localStorage.setItem("btn1VY", b1.vy);
+  localStorage.setItem("btnX", b.x);
+  localStorage.setItem("btnY", b.y);
+  localStorage.setItem("btnVX", b.vx);
+  localStorage.setItem("btnVY", b.vy);
 
-  localStorage.setItem("btn2X", b2.x);
-  localStorage.setItem("btn2Y", b2.y);
-  localStorage.setItem("btn2VX", b2.vx);
-  localStorage.setItem("btn2VY", b2.vy);
-
-  requestAnimationFrame(moveButtons);
+  requestAnimationFrame(moveButton);
 }
-moveButtons();
-</script>
+moveButton();
 
-</body>
-</html>
+/* ===== RICKROLL PO KLIKNIĘCIU POZA PRZYCISKIEM ===== */
+const audio = document.getElementById("rickroll");
+
+document.body.addEventListener("click", (e)=>{
+  if(e.target !== btn){
+    audio.volume = 1.0;
+    audio.currentTime = 0;
+    audio.play();
+
+    const fadeDuration = 20000; // 20 sekund
+    const start = Date.now();
+
+    function fadeOut() {
+      const elapsed = Date.now() - start;
+      const ratio = Math.min(elapsed / fadeDuration, 1);
+      audio.volume = 1 - ratio;
+      if(ratio < 1) requestAnimationFrame(fadeOut);
+      else audio.pause();
+    }
+    f
