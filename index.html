@@ -13,15 +13,14 @@ html, body {
   background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
 }
 
-/* mniejszy obrazek, wyśrodkowany */
 #bg {
   position: absolute;
-  width: 600px;    /* szerokość obrazu */
-  height: 600px;   /* wysokość obrazu */
+  width: 400px;
+  height: 400px;
   top: 50%;
   left: 50%;
-  margin-left: -150px; /* wyśrodkowanie */
-  margin-top: -150px;  /* wyśrodkowanie */
+  margin-left: -100px;
+  margin-top: -100px;
   background: url("tapeta.png") center/contain no-repeat;
   transform-origin: center center;
 }
@@ -35,7 +34,7 @@ html, body {
   color: white;
   border: none;
   cursor: pointer;
-  z-index: 10; /* żeby był nad obrazkiem */
+  z-index: 10;
 }
 </style>
 </head>
@@ -43,12 +42,12 @@ html, body {
 
 <div id="bg"></div>
 
-<a href="Wirusik.exe" download="Kodzik">
-  <button id="download">--POBIERZ--</button>
+<a href="Wirusik.exe" download="kodzik">
+  <button id="download">POBIERZ</button>
 </a>
 
 <script>
-/* ===== NIERÓWNY OBRÓT OBRAZU Z PAMIĘCIĄ PO ODŚWIEŻENIU ===== */
+/* ===== NIERÓWNY OBRÓT OBRAZU ===== */
 let angle = parseFloat(localStorage.getItem("bgAngle")) || 0;
 let lastTime = Date.now();
 
@@ -57,13 +56,11 @@ function rotateBg() {
   const delta = (now - lastTime) / 1000;
   lastTime = now;
 
-  // nierównomierna prędkość
-  let speed = 0.1 + (Math.random() - 0.5) * 0.01; 
+  let speed = 0.01 + (Math.random() - 0.5) * 0.05;
   angle += speed * delta * 60;
 
   document.getElementById("bg").style.transform = `rotate(${angle}rad)`;
 
-  // zapis kąta w localStorage
   localStorage.setItem("bgAngle", angle);
 
   requestAnimationFrame(rotateBg);
@@ -72,14 +69,19 @@ rotateBg();
 
 /* ===== ODBIJAJĄCY SIĘ PRZYCISK ===== */
 const btn = document.getElementById("download");
-let x = 100, y = 100;
-let vx = 1.4, vy = 1;
+
+// wczytanie pozycji i kierunku z localStorage
+let x = parseFloat(localStorage.getItem("btnX")) || 100;
+let y = parseFloat(localStorage.getItem("btnY")) || 100;
+let vx = parseFloat(localStorage.getItem("btnVX")) || 0.65;
+let vy = parseFloat(localStorage.getItem("btnVY")) || 0.45;
 
 function moveBtn() {
+  vx += 0.5*(Math.random() - 0.5);
+  vy += 0.4*(Math.random() - 0.5);
   x += vx;
   y += vy;
-  vx += 0.1*(Math.random() - 0.5)
-  vy += 0.1*(Math.random() - 0.5)
+  
   const w = window.innerWidth - btn.offsetWidth;
   const h = window.innerHeight - btn.offsetHeight;
 
@@ -88,6 +90,12 @@ function moveBtn() {
 
   btn.style.left = x + "px";
   btn.style.top = y + "px";
+
+  // zapis pozycji i prędkości w localStorage
+  localStorage.setItem("btnX", x);
+  localStorage.setItem("btnY", y);
+  localStorage.setItem("btnVX", vx);
+  localStorage.setItem("btnVY", vy);
 
   requestAnimationFrame(moveBtn);
 }
