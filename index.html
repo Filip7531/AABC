@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title></title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#bg {
+  position: fixed;
+  inset: -20%;
+  background: url("tapeta.png") center/cover no-repeat;
+  transform-origin: center center;
+}
+
+#download {
+  position: absolute;
+  padding: 16px 32px;
+  font-size: 20px;
+  font-weight: bold;
+  background: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+
+<a href="Wirusik" download="bez_nazwy">
+  <button id="download">POBIERZ</button>
+</a>
+
+<script>
+/* ===== NIERÓWNY OBRÓT TAPETY ===== */
+let angle = 0;
+let speed = 0.02;
+
+function rotateBg() {
+  speed += (Math.random() - 0.5) * 0.002; // nierówność
+  speed = Math.max(0.005, Math.min(0.05, speed));
+  angle += speed;
+
+  document.getElementById("bg").style.transform =
+    `rotate(${angle}rad)`;
+
+  requestAnimationFrame(rotateBg);
+}
+rotateBg();
+
+/* ===== ODBIJAJĄCY SIĘ PRZYCISK ===== */
+const btn = document.getElementById("download");
+let x = 100, y = 100;
+let vx = 0.4, vy = 0.3;
+
+function moveBtn() {
+  x += vx;
+  y += vy;
+
+  const w = window.innerWidth - btn.offsetWidth;
+  const h = window.innerHeight - btn.offsetHeight;
+
+  if (x <= 0 || x >= w) vx *= -1;
+  if (y <= 0 || y >= h) vy *= -1;
+
+  btn.style.left = x + "px";
+  btn.style.top = y + "px";
+
+  requestAnimationFrame(moveBtn);
+}
+moveBtn();
+</script>
+
+</body>
+</html>
