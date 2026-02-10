@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title></title>
-
 <style>
 html, body {
   margin: 0;
@@ -11,13 +10,19 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background: #000;
 }
 
 #bg {
   position: fixed;
-  inset: -20%;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
   background: url("tapeta.png") center/cover no-repeat;
   transform-origin: center center;
+  /* dodaje efekt "dalej od ekranu" */
+  perspective: 1000px;
 }
 
 #download {
@@ -36,23 +41,19 @@ html, body {
 
 <div id="bg"></div>
 
-<a href="Wirusik" download="bez_nazwy">
+<a href="Wirusik.exe" download="Gra_o_Wirusach.exe">
   <button id="download">POBIERZ</button>
 </a>
 
 <script>
-/* ===== NIERÓWNY OBRÓT TAPETY ===== */
-let angle = 0;
-let speed = 0.02;
+/* ===== NIERÓWNY OBRÓT TAPETY (ciągły) ===== */
+const start = Date.now();
 
 function rotateBg() {
-  speed += (Math.random() - 0.5) * 0.002; // nierówność
-  speed = Math.max(0.005, Math.min(0.05, speed));
-  angle += speed;
-
-  document.getElementById("bg").style.transform =
-    `rotate(${angle}rad)`;
-
+  const elapsed = (Date.now() - start) / 1000; // sekundy
+  // nierówna prędkość: szybciej-słabiej, trochę sinusoidalnie
+  const angle = elapsed * 0.2 + Math.sin(elapsed * 2.137) * 0.01;
+  document.getElementById("bg").style.transform = `rotate(${angle}rad)`;
   requestAnimationFrame(rotateBg);
 }
 rotateBg();
@@ -60,7 +61,7 @@ rotateBg();
 /* ===== ODBIJAJĄCY SIĘ PRZYCISK ===== */
 const btn = document.getElementById("download");
 let x = 100, y = 100;
-let vx = 0.4, vy = 0.3;
+let vx = 0.35*2, vy = 0.25*2; // wolniej i stabilniej
 
 function moveBtn() {
   x += vx;
