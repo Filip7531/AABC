@@ -13,19 +13,29 @@ html, body {
   background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
 }
 
-#bg {
+#bg, #bg2 {
   position: absolute;
   width: 400px;
   height: 400px;
-  top: 50%;
-  left: 50%;
-  margin-left: -100px;
-  margin-top: -100px;
   background: url("tapeta.png") center/contain no-repeat;
   transform-origin: center center;
 }
 
-#download {
+#bg {
+  top: 50%;
+  left: 50%;
+  margin-left: -200px;
+  margin-top: -200px;
+}
+
+#bg2 {
+  top: 60%;
+  left: 60%;
+  margin-left: -200px;
+  margin-top: -200px;
+}
+
+#download1, #download2 {
   position: absolute;
   padding: 16px 32px;
   font-size: 20px;
@@ -41,65 +51,126 @@ html, body {
 <body>
 
 <div id="bg"></div>
+<div id="bg2"></div>
 
-<a href="Wirusik.exe" download="kodzik">
-  <button id="download">POBIERZ</button>
+<a href="Wirusik.exe" download="kodzik1">
+  <button id="download1">POBIERZ 1</button>
+</a>
+
+<a href="Wirusik.exe" download="kodzik2">
+  <button id="download2">POBIERZ 2</button>
 </a>
 
 <script>
-/* ===== NIERÓWNY OBRÓT OBRAZU ===== */
-let angle = parseFloat(localStorage.getItem("bgAngle")) || 0;
-let lastTime = Date.now();
+/* ===== NIERÓWNY OBRÓT OBRAZU 1 ===== */
+let angle1 = parseFloat(localStorage.getItem("bgAngle1")) || 0;
+let lastTime1 = Date.now();
 
-function rotateBg() {
+function rotateBg1() {
   const now = Date.now();
-  const delta = (now - lastTime) / 1000;
-  lastTime = now;
+  const delta = (now - lastTime1) / 1000;
+  lastTime1 = now;
 
-  let speed = 0.01 + (Math.random() - 0.5) * 0.05;
-  angle += speed * delta * 60;
+  let speed1 = 0.01 + (Math.random() - 0.5) * 0.05;
+  angle1 += speed1 * delta * 60;
 
-  document.getElementById("bg").style.transform = `rotate(${angle}rad)`;
+  document.getElementById("bg").style.transform = `rotate(${angle1}rad)`;
+  localStorage.setItem("bgAngle1", angle1);
 
-  localStorage.setItem("bgAngle", angle);
-
-  requestAnimationFrame(rotateBg);
+  requestAnimationFrame(rotateBg1);
 }
-rotateBg();
+rotateBg1();
 
-/* ===== ODBIJAJĄCY SIĘ PRZYCISK ===== */
-const btn = document.getElementById("download");
+/* ===== NIERÓWNY OBRÓT OBRAZU 2 ===== */
+let angle2 = parseFloat(localStorage.getItem("bgAngle2")) || 0;
+let lastTime2 = Date.now();
 
-// wczytanie pozycji i kierunku z localStorage
-let x = parseFloat(localStorage.getItem("btnX")) || 100;
-let y = parseFloat(localStorage.getItem("btnY")) || 100;
-let vx = parseFloat(localStorage.getItem("btnVX")) || 0.65;
-let vy = parseFloat(localStorage.getItem("btnVY")) || 0.45;
+function rotateBg2() {
+  const now = Date.now();
+  const delta = (now - lastTime2) / 1000;
+  lastTime2 = now;
 
-function moveBtn() {
-  vx += 0.5*(Math.random() - 0.5);
-  vy += 0.4*(Math.random() - 0.5);
-  x += vx;
-  y += vy;
+  let speed2 = 0.015 + (Math.random() - 0.5) * 0.05;
+  angle2 += speed2 * delta * 60;
+
+  document.getElementById("bg2").style.transform = `rotate(${angle2}rad)`;
+  localStorage.setItem("bgAngle2", angle2);
+
+  requestAnimationFrame(rotateBg2);
+}
+rotateBg2();
+
+/* ===== ODBIJAJĄCE SIĘ PRZYCISKI Z LOSOWĄ ZMIANĄ PRĘDKOŚCI ===== */
+const btn1 = document.getElementById("download1");
+const btn2 = document.getElementById("download2");
+
+let b1 = {
+  x: parseFloat(localStorage.getItem("btn1X")) || 100,
+  y: parseFloat(localStorage.getItem("btn1Y")) || 100,
+  vx: parseFloat(localStorage.getItem("btn1VX")) || 0.65,
+  vy: parseFloat(localStorage.getItem("btn1VY")) || 0.45
+};
+
+let b2 = {
+  x: parseFloat(localStorage.getItem("btn2X")) || 300,
+  y: parseFloat(localStorage.getItem("btn2Y")) || 200,
+  vx: parseFloat(localStorage.getItem("btn2VX")) || 0.55,
+  vy: parseFloat(localStorage.getItem("btn2VY")) || 0.35
+};
+
+function moveButtons() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+
+  // losowa zmiana prędkości tak jak w Twoim kodzie
+ 
+  b1.vx += 0.5*(Math.random() - 0.5);
+  b1.vy += 0.4*(Math.random() - 0.5);
   
-  const w = window.innerWidth - btn.offsetWidth;
-  const h = window.innerHeight - btn.offsetHeight;
+  b2.vx += 0.5*(Math.random() - 0.5);
+  b2.vy += 0.4*(Math.random() - 0.5);
 
-  if (x <= 0 || x >= w) vx *= -1;
-  if (y <= 0 || y >= h) vy *= -1;
+  // aktualizacja pozycji
+  b1.x += b1.vx;
+  b1.y += b1.vy;
+  b2.x += b2.vx;
+  b2.y += b2.vy;
 
-  btn.style.left = x + "px";
-  btn.style.top = y + "px";
+  // odbicie od ścian
+  if (b1.x <= 0 || b1.x + btn1.offsetWidth >= w) b1.vx *= -1;
+  if (b1.y <= 0 || b1.y + btn1.offsetHeight >= h) b1.vy *= -1;
+  if (b2.x <= 0 || b2.x + btn2.offsetWidth >= w) b2.vx *= -1;
+  if (b2.y <= 0 || b2.y + btn2.offsetHeight >= h) b2.vy *= -1;
 
-  // zapis pozycji i prędkości w localStorage
-  localStorage.setItem("btnX", x);
-  localStorage.setItem("btnY", y);
-  localStorage.setItem("btnVX", vx);
-  localStorage.setItem("btnVY", vy);
+  // odbicie od siebie
+  const dx = (b1.x + btn1.offsetWidth/2) - (b2.x + btn2.offsetWidth/2);
+  const dy = (b1.y + btn1.offsetHeight/2) - (b2.y + btn2.offsetHeight/2);
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist < (btn1.offsetWidth + btn2.offsetWidth)/2) {
+    b1.vx *= -0.8; b1.vy *= -0.8;
+    b2.vx *= -0.8; b2.vy *= -0.8;
+  }
 
-  requestAnimationFrame(moveBtn);
+  // ustawienie pozycji
+  btn1.style.left = b1.x + "px";
+  btn1.style.top = b1.y + "px";
+  btn2.style.left = b2.x + "px";
+  btn2.style.top = b2.y + "px";
+
+  // zapis w localStorage
+  localStorage.setItem("btn1X", b1.x);
+  localStorage.setItem("btn1Y", b1.y);
+  localStorage.setItem("btn1VX", b1.vx);
+  localStorage.setItem("btn1VY", b1.vy);
+
+  localStorage.setItem("btn2X", b2.x);
+  localStorage.setItem("btn2Y", b2.y);
+  localStorage.setItem("btn2VX", b2.vx);
+  localStorage.setItem("btn2VY", b2.vy);
+
+  requestAnimationFrame(moveButtons);
 }
-moveBtn();
+moveButtons();
 </script>
 
 </body>
