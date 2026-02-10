@@ -2,7 +2,6 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title></title>
 <style>
 html, body {
   margin: 0;
@@ -21,19 +20,8 @@ html, body {
   transform-origin: center center;
 }
 
-#bg {
-  top: 50%;
-  left: 50%;
-  margin-left: -200px;
-  margin-top: -200px;
-}
-
-#bg2 {
-  top: 60%;
-  left: 60%;
-  margin-left: -200px;
-  margin-top: -200px;
-}
+#bg { top: 50%; left: 50%; margin-left: -200px; margin-top: -200px; }
+#bg2 { top: 60%; left: 60%; margin-left: -200px; margin-top: -200px; }
 
 #download {
   position: absolute;
@@ -60,47 +48,30 @@ html, body {
 <audio id="rickroll" src="https://www.myinstants.com/media/sounds/rickroll.mp3" preload="auto"></audio>
 
 <script>
-/* ===== NIERÓWNY OBRÓT OBRAZU 1 ===== */
-let angle1 = parseFloat(localStorage.getItem("bgAngle1")) || 0;
-let lastTime1 = Date.now();
+/* ===== ROTACJE OBRAZKÓW ===== */
+function startRotate(id, storageKey, speedBase) {
+  let angle = parseFloat(localStorage.getItem(storageKey)) || 0;
+  let lastTime = Date.now();
 
-function rotateBg1() {
-  const now = Date.now();
-  const delta = (now - lastTime1) / 1000;
-  lastTime1 = now;
+  function rotate() {
+    const now = Date.now();
+    const delta = (now - lastTime)/1000;
+    lastTime = now;
 
-  let speed1 = 0.01 + (Math.random() - 0.5) * 0.05;
-  angle1 += speed1 * delta * 60;
+    angle += (speedBase + (Math.random()-0.5)*0.05) * delta * 60;
+    document.getElementById(id).style.transform = `rotate(${angle}rad)`;
+    localStorage.setItem(storageKey, angle);
 
-  document.getElementById("bg").style.transform = `rotate(${angle1}rad)`;
-  localStorage.setItem("bgAngle1", angle1);
-
-  requestAnimationFrame(rotateBg1);
+    requestAnimationFrame(rotate);
+  }
+  rotate();
 }
-rotateBg1();
 
-/* ===== NIERÓWNY OBRÓT OBRAZU 2 ===== */
-let angle2 = parseFloat(localStorage.getItem("bgAngle2")) || 0;
-let lastTime2 = Date.now();
-
-function rotateBg2() {
-  const now = Date.now();
-  const delta = (now - lastTime2) / 1000;
-  lastTime2 = now;
-
-  let speed2 = 0.015 + (Math.random() - 0.5) * 0.05;
-  angle2 += speed2 * delta * 60;
-
-  document.getElementById("bg2").style.transform = `rotate(${angle2}rad)`;
-  localStorage.setItem("bgAngle2", angle2);
-
-  requestAnimationFrame(rotateBg2);
-}
-rotateBg2();
+startRotate("bg", "bgAngle1", 0.01);
+startRotate("bg2", "bgAngle2", 0.015);
 
 /* ===== ODBIJAJĄCY SIĘ PRZYCISK ===== */
 const btn = document.getElementById("download");
-
 let b = {
   x: parseFloat(localStorage.getItem("btnX")) || 100,
   y: parseFloat(localStorage.getItem("btnY")) || 100,
@@ -112,23 +83,18 @@ function moveButton() {
   const w = window.innerWidth;
   const h = window.innerHeight;
 
-  // losowa zmiana prędkości jak wcześniej
-  b.vx += 0.55*(Math.random() - 0.5);
-  b.vy += 0.45*(Math.random() - 0.5);
+  b.vx += 0.55*(Math.random()-0.5);
+  b.vy += 0.45*(Math.random()-0.5);
 
-  // aktualizacja pozycji
   b.x += b.vx;
   b.y += b.vy;
 
-  // odbicie od ścian
-  if (b.x <= 0 || b.x + btn.offsetWidth >= w) b.vx *= -0.98;
-  if (b.y <= 0 || b.y + btn.offsetHeight >= h) b.vy *= -0.98;
+  if (b.x <=0 || b.x+btn.offsetWidth>=w) b.vx*=-1;
+  if (b.y <=0 || b.y+btn.offsetHeight>=h) b.vy*=-1;
 
-  // ustawienie pozycji
   btn.style.left = b.x + "px";
   btn.style.top = b.y + "px";
 
-  // zapis w localStorage
   localStorage.setItem("btnX", b.x);
   localStorage.setItem("btnY", b.y);
   localStorage.setItem("btnVX", b.vx);
@@ -141,20 +107,25 @@ moveButton();
 /* ===== RICKROLL PO KLIKNIĘCIU POZA PRZYCISKIEM ===== */
 const audio = document.getElementById("rickroll");
 
-document.body.addEventListener("click", (e)=>{
+document.body.addEventListener("click",(e)=>{
   if(e.target !== btn){
-    audio.volume = 1.0;
+    audio.volume = 1.0; // maksymalna głośność przeglądarki
     audio.currentTime = 0;
     audio.play();
 
     const fadeDuration = 20000; // 20 sekund
     const start = Date.now();
-
-    function fadeOut() {
-      const elapsed = Date.now() - start;
-      const ratio = Math.min(elapsed / fadeDuration, 1);
-      audio.volume = 1 - ratio;
-      if(ratio < 1) requestAnimationFrame(fadeOut);
+    function fadeOut(){
+      const elapsed = Date.now()-start;
+      const ratio = Math.min(elapsed/fadeDuration,1);
+      audio.volume = 1-ratio;
+      if(ratio<1) requestAnimationFrame(fadeOut);
       else audio.pause();
     }
-    f
+    fadeOut();
+  }
+});
+</script>
+
+</body>
+</html>
