@@ -16,8 +16,8 @@ html, body {
 /* mniejszy obrazek, wyśrodkowany */
 #bg {
   position: absolute;
-  width: 300px;    /* szerokość obrazu */
-  height: 300px;   /* wysokość obrazu */
+  width: 600px;    /* szerokość obrazu */
+  height: 600px;   /* wysokość obrazu */
   top: 50%;
   left: 50%;
   margin-left: -150px; /* wyśrodkowanie */
@@ -58,7 +58,7 @@ function rotateBg() {
   lastTime = now;
 
   // nierównomierna prędkość
-  let speed = 0.2 + (Math.random() - 0.5) * 0.1; 
+  let speed = 0.1 + (Math.random() - 0.5) * 0.01; 
   angle += speed * delta * 60;
 
   document.getElementById("bg").style.transform = `rotate(${angle}rad)`;
@@ -73,12 +73,13 @@ rotateBg();
 /* ===== ODBIJAJĄCY SIĘ PRZYCISK ===== */
 const btn = document.getElementById("download");
 let x = 100, y = 100;
-let vx = 0.35*2, vy = 0.25*2;
+let vx = 1.4, vy = 1;
 
 function moveBtn() {
   x += vx;
   y += vy;
-
+  vx += 0.1*(Math.random() - 0.5)
+  vy += 0.1*(Math.random() - 0.5)
   const w = window.innerWidth - btn.offsetWidth;
   const h = window.innerHeight - btn.offsetHeight;
 
