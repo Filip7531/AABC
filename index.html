@@ -10,19 +10,20 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #000;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
 }
 
+/* mniejszy obrazek, wyśrodkowany */
 #bg {
-  position: fixed;
-  top: -25%;
-  left: -25%;
-  width: 100%;
-  height: 100%;
-  background: url("tapeta.png") center/cover no-repeat;
+  position: absolute;
+  width: 300px;    /* szerokość obrazu */
+  height: 300px;   /* wysokość obrazu */
+  top: 50%;
+  left: 50%;
+  margin-left: -150px; /* wyśrodkowanie */
+  margin-top: -150px;  /* wyśrodkowanie */
+  background: url("tapeta.png") center/contain no-repeat;
   transform-origin: center center;
-  /* dodaje efekt "dalej od ekranu" */
-  perspective: 1000px;
 }
 
 #download {
@@ -34,6 +35,7 @@ html, body {
   color: white;
   border: none;
   cursor: pointer;
+  z-index: 10; /* żeby był nad obrazkiem */
 }
 </style>
 </head>
@@ -41,19 +43,29 @@ html, body {
 
 <div id="bg"></div>
 
-<a href="Wirusik.exe" download="Gra_o_Wirusach.exe">
-  <button id="download">POBIERZ</button>
+<a href="Wirusik.exe" download="Kodzik">
+  <button id="download">--POBIERZ--</button>
 </a>
 
 <script>
-/* ===== NIERÓWNY OBRÓT TAPETY (ciągły) ===== */
-const start = Date.now();
+/* ===== NIERÓWNY OBRÓT OBRAZU Z PAMIĘCIĄ PO ODŚWIEŻENIU ===== */
+let angle = parseFloat(localStorage.getItem("bgAngle")) || 0;
+let lastTime = Date.now();
 
 function rotateBg() {
-  const elapsed = (Date.now() - start) / 1000; // sekundy
-  // nierówna prędkość: szybciej-słabiej, trochę sinusoidalnie
-  const angle = elapsed * 0.2 + Math.sin(elapsed * 2.137) * 0.01;
+  const now = Date.now();
+  const delta = (now - lastTime) / 1000;
+  lastTime = now;
+
+  // nierównomierna prędkość
+  let speed = 0.2 + (Math.random() - 0.5) * 0.1; 
+  angle += speed * delta * 60;
+
   document.getElementById("bg").style.transform = `rotate(${angle}rad)`;
+
+  // zapis kąta w localStorage
+  localStorage.setItem("bgAngle", angle);
+
   requestAnimationFrame(rotateBg);
 }
 rotateBg();
@@ -61,7 +73,7 @@ rotateBg();
 /* ===== ODBIJAJĄCY SIĘ PRZYCISK ===== */
 const btn = document.getElementById("download");
 let x = 100, y = 100;
-let vx = 0.35*2, vy = 0.25*2; // wolniej i stabilniej
+let vx = 0.35*2, vy = 0.25*2;
 
 function moveBtn() {
   x += vx;
